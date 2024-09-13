@@ -24,8 +24,8 @@ Before you begin, ensure you have the following installed:
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/your-username/ai-resume-screening-agent.git
-    cd ai-resume-screening-agent
+    git clone https://github.com/ragobech/ai_resume_screener.git
+    cd ai_resume_screener
     ```
 
 2. **Install dependencies using Poetry:**
@@ -49,7 +49,7 @@ Before you begin, ensure you have the following installed:
     You can run the application using Poetry:
 
     ```bash
-    poetry run python main.py
+    poetry run python3 start.py
     ```
 
 ## Usage
