@@ -14,7 +14,7 @@ from llama_index.core.workflow import (
     StopEvent,
     step
 )
-from ai_resume_screener.workflows.workflow_events import IntervieweeResponseEvent, IntervieweeResponseEvent
+from ai_resume_screener.workflows.workflow_events import IntervieweeResponseEvent
 from ai_resume_screener.workflows.core.screening_core import ScreeningCore
 from dotenv import load_dotenv
 
@@ -25,10 +25,6 @@ load_dotenv()
 
 # Set your OpenAI API key
 openai.api_key = os.getenv('OPENAI_API_KEY')
-
-# Check if environment variables are loaded
-logging.debug(f'QDRANT_API_KEY: {os.getenv("QDRANT_API_KEY")}')
-logging.debug(f'OPENAI_API_KEY: {os.getenv("OPENAI_API_KEY")}')
 
 class ResumeScreeningAgent(Workflow):
     def __init__(
@@ -68,34 +64,34 @@ class ResumeScreeningAgent(Workflow):
                 f"{current_context}\n"
                 "---------------------\n"
                 "Query: Given the above context, summarize the candidate report with Key Highlights "
-                "and important Performance Indicators\n."
-                "Create an Evaluation of the candidate's resume based on the following four categories." 
-                "For each category, provide a score from 0 to 5, where 0 is the lowest and 5 is the highest. Include a brief explanation for each score."
+                "and important Performance Indicators.\n"
+                "Create an Evaluation of the candidate's resume based on the following four categories."
+                "For each category, provide a score from 0 to 5, where 0 is the lowest and 5 is the highest. Include a brief explanation for each score.\n"
                
-                "Technical Skills (0-5):"
-                "Description: Assess the candidate's technical proficiency based on the skills listed on their resume. Consider the relevance, depth, and breadth of the technical skills."
-                "Score: [0-5]"
-                "Explanation:"
+                "Technical Skills (0-5):\n"
+                "Description: Assess the candidate's technical proficiency based on the skills listed on their resume. Consider the relevance, depth, and breadth of the technical skills.\n"
+                "Score: [0-5]\n"
+                "Explanation:\n"
 
-                "Experience and Achievements (0-5):"
-                "Description: Evaluate the candidate's professional experience and accomplishments. Consider the significance of their roles, responsibilities, and the impact of their achievements."
-                "Score: [0-5]"
-                "Explanation:"
+                "Experience and Achievements (0-5):\n"
+                "Description: Evaluate the candidate's professional experience and accomplishments. Consider the significance of their roles, responsibilities, and the impact of their achievements.\n"
+                "Score: [0-5]\n"
+                "Explanation:\n"
 
-                "Education and Certifications (0-5):"
-                "Description: Assess the candidate’s educational background and any relevant certifications. Consider the relevance of their education and any additional qualifications that support their expertise."
-                "Score: [0-5]"
-                "Explanation:"
+                "Education and Certifications (0-5):\n"
+                "Description: Assess the candidate’s educational background and any relevant certifications. Consider the relevance of their education and any additional qualifications that support their expertise.\n"
+                "Score: [0-5]\n"
+                "Explanation:\n"
 
-                "Soft Skills and Leadership (0-5):"
-                "Description: Evaluate the candidate's soft skills and leadership qualities based on their resume. Consider their ability to work in teams, communication skills, and leadership experience."
-                "Score: [0-5]"
-                "Explanation:"
+                "Soft Skills and Leadership (0-5):\n"
+                "Description: Evaluate the candidate's soft skills and leadership qualities based on their resume. Consider their ability to work in teams, communication skills, and leadership experience.\n"
+                "Score: [0-5]\n"
+                "Explanation:\n"
 
-                "Cultural Fit and Alignment with Role (0-5):"
-                "Description: Assess how well the candidate’s background and experience align with the company’s culture and the specific role they are applying for. Consider their potential to fit in with the team and contribute to the company's goals."
-                "Score: [0-5]"
-                "Explanation:"
+                "Cultural Fit and Alignment with Role (0-5):\n"
+                "Description: Assess how well the candidate’s background and experience align with the company’s culture and the specific role they are applying for. Consider their potential to fit in with the team and contribute to the company's goals.\n"
+                "Score: [0-5]\n"
+                "Explanation:\n"
                 "Answer: "
             )
             prompt_tmpl = PromptTemplate(prompt_tmpl_str)
@@ -111,10 +107,21 @@ class ResumeScreeningAgent(Workflow):
             current_response = ev.response
             current_summary = ev.summary
 
+            # Save summary to file
             with open(f'./{self.file_name.strip(".pdf")}.md', mode='w') as script:
                 script.write(f'user_query : {current_query}\n')
                 script.write(f'agent_response : {current_response}\n')
                 script.write(f'summary : {current_summary}\n')
-            return StopEvent(result=str(current_summary))
+
+            # Prompt user for feedback
+            feedback = input("Please provide feedback on the evaluation (e.g., accuracy, relevancy, score changes): ")
+
+            # Save feedback
+            with open(f'./{self.file_name.strip(".pdf")}_feedback.md', mode='w') as feedback_file:
+                feedback_file.write(f'feedback : {feedback}\n')
+
+            # Return the result and feedback
+            return StopEvent(result=f"Summary: {current_summary}\nFeedback: {feedback}")
+
         except Exception as e:
             logging.error(str(e))

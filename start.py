@@ -7,9 +7,9 @@ import nest_asyncio
 nest_asyncio.apply()
 
 async def main():
-    screen = ResumeScreeningAgent(timeout=300, verbose=True)
-    user_query = ("What are the main details about this candidate?")
-    candidate_assessment= await screen.run(user_query=user_query)
+    agent = ResumeScreeningAgent(timeout=300, verbose=True)
+    user_query = ("Evaluate the resume of the candidate for a VP of Engineering position.")
+    candidate_assessment= await agent.run(user_query=user_query)
     print(candidate_assessment)
     
 
